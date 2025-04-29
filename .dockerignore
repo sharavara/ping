@@ -1,0 +1,22 @@
+# Git files
+.git
+.gitignore
+
+# Docker files
+Dockerfile
+.dockerignore
+
+# Build artifacts
+/bin
+/dist
+
+# Development artifacts
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Misc
+README.md
+LICENSE
+Makefile

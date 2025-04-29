@@ -1,0 +1,55 @@
+FROM golang:1.22-alpine AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Set build arguments
+ARG VERSION=0.0.1
+ARG COMMIT_SHA=dev
+
+# Install necessary build tools
+RUN apk add --no-cache git ca-certificates tzdata
+
+# Copy go mod and sum files
+COPY go.mod ./
+# Uncomment if you have a go.sum file
+# COPY go.sum ./
+# RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Build the application with build information
+RUN CGO_ENABLED=0 GOOS=linux go build \
+    -ldflags "-s -w \
+    -X main.version=${VERSION} \
+    -X main.commitSHA=${COMMIT_SHA} \
+    -X main.dockerImage=sharavara/ping:${VERSION}" \
+    -o app .
+
+# Create a minimal production image
+FROM alpine:3.21.3 AS final
+
+# Add non-root user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Install necessary runtime dependencies
+RUN apk --no-cache add ca-certificates tzdata
+
+# Set working directory
+WORKDIR /app
+
+# Copy binary from builder
+COPY --from=builder /app/app .
+
+# Set ownership for security
+RUN chown -R appuser:appgroup /app
+
+# Use non-root user
+USER appuser
+
+# Expose the port the app runs on
+EXPOSE 8080
+
+# Command to run
+CMD ["./app"]
