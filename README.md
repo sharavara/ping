@@ -27,39 +27,31 @@ go build -o app .
 ./app
 ```
 
-### Set environment variables (optional)
-
-```bash
-# Set environment
-export ENV=prod
-
-# Set port (default is 8080)
-export PORT=8080
-```
-
 ## Docker
 
 ### Build Docker image
 
-```bash
-# Build with default values
-docker build -t sharavara/ping:latest .
+Build local image
 
-# Build with specific version and commit SHA
-docker build \
-  --build-arg VERSION=1.0.0 \
-  --build-arg COMMIT_SHA=$(git rev-parse HEAD) \
-  -t sharavara/ping:1.0.0 .
+```bash
+make puild
+```
+
+
+Build image and push to repository
+
+```bash
+make push
 ```
 
 ### Run Docker container
 
 ```bash
 # Run with default settings
-docker run -p 8080:8080 sharavara/ping:latest
+docker run --rm -p 8080:8080 sharavara/ping:latest
 
 # Run with specific environment
-docker run -p 8080:8080 -e ENV=prod sharavara/ping:latest
+docker run --rm -p 8080:8080 -e ENV=prod sharavara/ping:latest
 ```
 
 ## API Usage
@@ -75,9 +67,9 @@ Response:
   "service_name": "ping",
   "version": "0.1.0",
   "docker_image": "sharavara/ping:latest",
-  "host_ip": "192.168.1.10",
   "container_ip": "172.17.0.2",
-  "environment": "dev"
+  "environment": "dev",
+  "commit_author": "John Doe"
 }
 ```
 

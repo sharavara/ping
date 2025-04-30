@@ -16,6 +16,7 @@ var (
 	appName       = "ping"
 	version       = "0.1.0"
 	commitSHA     = "dev"
+	commitAuthor  = "unknown"
 	repository    = "https://github.com/sharavara/ping"
 	dockerImage   = "sharavara/ping:latest"
 	environment   = getEnv("ENV", "dev")
@@ -27,9 +28,9 @@ type Response struct {
 	ServiceName string `json:"service_name"`
 	Version     string `json:"version"`
 	DockerImage string `json:"docker_image"`
-	HostIP      string `json:"host_ip"`
 	ContainerIP string `json:"container_ip"`
 	Environment string `json:"environment"`
+	CommitAuthor string `json:"commit_author"`
 }
 
 func getEnv(key, fallback string) string {
@@ -39,16 +40,6 @@ func getEnv(key, fallback string) string {
 	return fallback
 }
 
-func getHostIP() string {
-	conn, err := net.Dial("udp", "8.8.8.8:80")
-	if err != nil {
-		return "unknown"
-	}
-	defer conn.Close()
-	
-	localAddr := conn.LocalAddr().(*net.UDPAddr)
-	return localAddr.IP.String()
-}
 
 func getContainerIP() string {
 	ifaces, err := net.Interfaces()
@@ -95,7 +86,6 @@ func getContainerIP() string {
 }
 
 func pingHandler(w http.ResponseWriter, r *http.Request) {
-	hostIP := getHostIP()
 	containerIP := getContainerIP()
 	
 	response := Response{
@@ -103,9 +93,9 @@ func pingHandler(w http.ResponseWriter, r *http.Request) {
 		ServiceName: appName,
 		Version:     version,
 		DockerImage: dockerImage,
-		HostIP:      hostIP,
 		ContainerIP: containerIP,
 		Environment: environment,
+		CommitAuthor: commitAuthor,
 	}
 	
 	w.Header().Set("Content-Type", "application/json")
@@ -117,10 +107,10 @@ func main() {
 	fmt.Println("Application:", appName)
 	fmt.Println("Version:", version)
 	fmt.Println("Commit SHA:", commitSHA)
+	fmt.Println("Commit Author:", commitAuthor)
 	fmt.Println("Repository:", repository)
 	fmt.Println("Docker Image:", dockerImage)
 	fmt.Println("Container IP:", getContainerIP())
-	fmt.Println("Host IP:", getHostIP())
 	fmt.Println("CPU Architecture:", runtime.GOARCH)
 	fmt.Println("Environment:", environment)
 	
