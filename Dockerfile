@@ -33,6 +33,14 @@ RUN CGO_ENABLED=0 GOOS=linux go build \
 # Create a minimal production image
 FROM alpine:3.21.3 AS final
 
+ARG REPOSITORY=https://github.com/sharavara/ping
+ARG COMMIT_AUTHOR=unknown
+
+LABEL org.opencontainers.image.authors="${COMMIT_AUTHOR}"
+LABEL org.opencontainers.image.source="${REPOSITORY}"
+
+ENV TERM=xterm-color
+
 # Add non-root user
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 

@@ -2,7 +2,7 @@
 
 set -e
 
-VERSION="0.0.2"
+VERSION="0.0.4"
 COMMIT_SHA=$(git rev-parse HEAD 2>/dev/null)
 COMMIT_AUTHOR=$(git log -1 --pretty=format:"%an" 2>/dev/null)
 REPOSITORY="https://github.com/sharavara/ping"
